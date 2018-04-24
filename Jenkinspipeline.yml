@@ -1,0 +1,9 @@
+projectName: ppx-test
+appName: ppx-dashboard-pmi4
+ocpConfig: false
+ocpConfigBranch: master
+pipelineType: nodejs
+nodejsBuild: "npm"
+buildResources: [ "public/*", "*.json", "src/*", "node_modules/*"]
+deployEnvs: [ "test" ]
+baselineCode: false
