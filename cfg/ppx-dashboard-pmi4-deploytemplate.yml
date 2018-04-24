@@ -1,0 +1,172 @@
+apiVersion: v1
+kind: Template
+parameters:
+- name: PROJECT_NAME
+- name: APPLICATION_NAME
+- name: ENV
+- name: APPLICATION_ROUTE
+- name: SPS_ROUTE
+- name: JWT_PVC_NAME
+- name: JWT_PVC_MOUNT_PATH
+- name: IMAGE_NAMESPACE
+  value: ocp-image
+- name: IMAGE_NAME
+  value: ppx-dashboard-pmi4
+- name: TAG
+metadata:
+  name: ${APPLICATION_NAME}
+  labels:
+    app: ${APPLICATION_NAME}
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    test: false
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    strategy:
+      type: Rolling
+      resources: {}
+      rollingParams:
+        updatePeriodSeconds: 1
+        intervalSeconds: 1
+        timeoutSeconds: 600
+    template:
+      metadata:
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}
+      spec:
+        volumes:
+          - name: cert-volume
+            persistentVolumeClaim:
+              claimName: ${JWT_PVC_NAME}
+        containers:
+        - env:
+          - name: APPLICATION_NAME
+            value: ${APPLICATION_NAME}
+          - name: ENV
+            value: ${ENV}
+          - name: TAG
+            value: ${TAG}
+          - name: JWTFilterConfig_enabled
+            value: 'false'            
+          - name: APP_FILE
+            value: 'InvoiceSummaryService.py'
+          - name: PPX_APP_DBSERVER
+            value: 'mongodb://'
+          - name: PPX_APP_PORT
+            value: '27017'
+          - name: PPX_APP_DBNAME
+            value: 'PPXODST'
+          - name: PPX_APP_HOST
+            value: 'edclmdbd107.bcbsfl.com'
+          - name: PPX_APP_REPLICASET
+            value: 'mdbd01s01r'
+          - name: PPX_APP_READPREFERENCE
+            value: 'secondaryPreferred'
+          - name: PPX_CFG_DBSERVER
+            value: 'mongodb://'
+          - name: PPX_CFG_PORT
+            value: '27017'
+          - name: PPX_CFG_DBNAME
+            value: 'PPXODST'
+          - name: PPX_CFG_HOST
+            value: 'edclmdbd107.bcbsfl.com'
+          - name: PPX_CFG_REPLICASET
+            value: 'mdbd01s01r'
+          - name: PPX_CFG_READPREFERENCE
+            value: 'secondaryPreferred'
+          - name: PPX_RPT_DBSERVER
+            value: 'mongodb://'
+          - name: PPX_RPT_PORT
+            value: '27017'
+          - name: PPX_RPT_DBNAME
+            value: 'PPXODST'
+          - name: PPX_RPT_HOST
+            value: 'edclmdbd107.bcbsfl.com'
+          - name: PPX_RPT_REPLICASET
+            value: 'mdbd01s01r'
+          - name: PPX_RPT_READPREFERENCE
+            value: 'secondaryPreferred'
+          - name: PPX_USERNAME
+            value: 'ppx'
+          - name: PPX_PASSWORD
+            value: 'ppxpwd'
+          - name: JWT_DISABLED
+            value : 'True'
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 8443
+            protocol: TCP
+          - containerPort: 8778
+            protocol: TCP
+          - containerPort: 3000
+            protocol: TCP            
+          image: ${APPLICATION_NAME}
+          name: ${APPLICATION_NAME}
+          resources: {}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+         - ${APPLICATION_NAME}
+        from:
+          kind: ImageStreamTag
+          namespace: ${IMAGE_NAMESPACE}
+          name: ${IMAGE_NAME}:${TAG}
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+    namespace: ${PROJECT_NAME}
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8443-tcp
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+    - name: 8778-tcp
+      port: 8778
+      protocol: TCP
+      targetPort: 8778
+    - name: 3000-tcp
+      port: 3000
+      protocol: TCP
+      targetPort: 3000     
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    type: ClusterIP
+    sessionAffinity: None
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    host: ${APPLICATION_ROUTE}
+    path: /
+    port:
+      targetPort: 3000-tcp
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}

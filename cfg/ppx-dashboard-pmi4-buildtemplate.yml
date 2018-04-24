@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Template
+parameters:
+- name: IMAGE_NAMESPACE
+  value: ocp-image
+- name: IMAGE_NAME
+  value: ppx-dashboard-pmi4
+metadata:
+  name: ${IMAGE_NAME}
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations: {}
+    labels:
+      app: ${IMAGE_NAME}
+    name: ${IMAGE_NAME}
+  spec:
+    completionDeadlineSeconds: 1800
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${IMAGE_NAME}:latest
+    postCommit: {}
+    resources: {}
+    source:
+      type: Binary
+      binary: {}
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: ${IMAGE_NAMESPACE}
+          name: 'system-ocpimage-nodejs:2.0.0.11'
+        env:
+        - name: NPM_MIRROR
+          value: 'http://artifactory.bcbsfl.com/artifactory/npm-libs-virtual/'
+      type: Source
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${IMAGE_NAME}
+    name: ${IMAGE_NAME}
