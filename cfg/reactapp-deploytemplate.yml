@@ -11,7 +11,7 @@ parameters:
 - name: IMAGE_NAMESPACE
   value: ocp-image
 - name: IMAGE_NAME
-  value: ppx-dashboard-pmi4
+  value: reactapp
 - name: TAG
 metadata:
   name: ${APPLICATION_NAME}
@@ -55,52 +55,9 @@ objects:
             value: ${ENV}
           - name: TAG
             value: ${TAG}
-          - name: JWTFilterConfig_enabled
-            value: 'false'            
+            
           - name: APP_FILE
-            value: 'InvoiceSummaryService.py'
-          - name: PPX_APP_DBSERVER
-            value: 'mongodb://'
-          - name: PPX_APP_PORT
-            value: '27017'
-          - name: PPX_APP_DBNAME
-            value: 'PPXODST'
-          - name: PPX_APP_HOST
-            value: 'edclmdbd107.bcbsfl.com'
-          - name: PPX_APP_REPLICASET
-            value: 'mdbd01s01r'
-          - name: PPX_APP_READPREFERENCE
-            value: 'secondaryPreferred'
-          - name: PPX_CFG_DBSERVER
-            value: 'mongodb://'
-          - name: PPX_CFG_PORT
-            value: '27017'
-          - name: PPX_CFG_DBNAME
-            value: 'PPXODST'
-          - name: PPX_CFG_HOST
-            value: 'edclmdbd107.bcbsfl.com'
-          - name: PPX_CFG_REPLICASET
-            value: 'mdbd01s01r'
-          - name: PPX_CFG_READPREFERENCE
-            value: 'secondaryPreferred'
-          - name: PPX_RPT_DBSERVER
-            value: 'mongodb://'
-          - name: PPX_RPT_PORT
-            value: '27017'
-          - name: PPX_RPT_DBNAME
-            value: 'PPXODST'
-          - name: PPX_RPT_HOST
-            value: 'edclmdbd107.bcbsfl.com'
-          - name: PPX_RPT_REPLICASET
-            value: 'mdbd01s01r'
-          - name: PPX_RPT_READPREFERENCE
-            value: 'secondaryPreferred'
-          - name: PPX_USERNAME
-            value: 'ppx'
-          - name: PPX_PASSWORD
-            value: 'ppxpwd'
-          - name: JWT_DISABLED
-            value : 'True'
+            value: 'index.js'
           ports:
           - containerPort: 8080
             protocol: TCP
