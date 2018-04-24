@@ -1,5 +1,5 @@
-projectName: ppx-test
-appName: ppx-dashboard-pmi4
+projectName: learn-OS
+appName: reactapp
 ocpConfig: false
 ocpConfigBranch: master
 pipelineType: nodejs
