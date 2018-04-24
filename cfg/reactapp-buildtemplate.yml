@@ -4,7 +4,7 @@ parameters:
 - name: IMAGE_NAMESPACE
   value: ocp-image
 - name: IMAGE_NAME
-  value: ppx-dashboard-pmi4
+  value: reactapp
 metadata:
   name: ${IMAGE_NAME}
 objects:
@@ -32,9 +32,7 @@ objects:
           kind: ImageStreamTag
           namespace: ${IMAGE_NAMESPACE}
           name: 'system-ocpimage-nodejs:2.0.0.11'
-        env:
-        - name: NPM_MIRROR
-          value: 'http://artifactory.bcbsfl.com/artifactory/npm-libs-virtual/'
+
       type: Source
 - apiVersion: v1
   kind: ImageStream
