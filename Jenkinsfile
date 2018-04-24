@@ -1,12 +1,8 @@
 #!/usr/bin/env groovy
 @Library('cplib') _
-import com.bcbsfl.paas.cplib.helpers.Workspace
-import com.bcbsfl.paas.cplib.utils.Openshift
-import com.bcbsfl.paas.cplib.pipelines.*
 
- def wspace = new Workspace()   
- def osh = new Openshift()
-    def appReleaseTag = ""
+
+
     
 
 
@@ -49,8 +45,7 @@ import com.bcbsfl.paas.cplib.pipelines.*
             		script {
             			log.info "Explicit scm checkout ..."
             			checkout scm
-                        wspace.init()
-                        appReleaseTag = wspace.getBuildProperty("version") + "." + env.BUILD_NUMBER
+                        
 
             		}
             	}
@@ -96,7 +91,7 @@ log.info "Preparing Image contents ..."
                     	    sh '''
                                 echo "Release version not exist"
                             '''
-                            appReleaseTag = osh.buildAppImage("ppx-dashboard-pmi4", appReleaseTag)
+                            appReleaseTag = osh.buildAppImage("reactapp", appReleaseTag)
                             sh '''
                                 echo $appReleaseTag
                             '''
@@ -114,7 +109,7 @@ log.info "Preparing Image contents ..."
 	        stage('Deploy Tsta') {
                 steps {
                     script {
-                        osh.deploy("ppx-test", "ppx-dashboard-pmi4", "tsta", appReleaseTag)
+                        osh.deploy("ppx-test", "reactapp", "tsta", appReleaseTag)
                     }
                 }
             }//Close stage 'Deploy Tsta'
